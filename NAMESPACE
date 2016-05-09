@@ -1,0 +1,19 @@
+# C programs
+useDynLib(plspolychaos, Cpolleg2, TCpolleg2, boucleregpls, calcHii)
+#Main functions
+export(analyticsPolyLeg, polyLeg, calcPLSPCE, descrdata,
+       print.PCEdesign, print.PCEpoly, print.PLSPCE, plot.PLSPCE)
+
+exportClasses(PCEdesign, PCEpoly, PLSPCE)
+exportMethods(getNames)
+import(methods)
+importFrom("utils", "combn")
+importFrom("MASS", "ginv")
+importFrom("lhs", "randomLHS")
+importFrom("stats", "var", "cor", "lm", "sd", "complete.cases")
+importFrom("graphics", "plot", "barplot", "axis", "legend", "lines")
+importFrom("grDevices", "dev.interactive", "dev.new")
+S3method(print, PCEdesign)
+S3method(print, PCEpoly)
+S3method(print, PLSPCE)
+S3method(plot, PLSPCE)

@@ -1,0 +1,193 @@
+
+R version 3.2.3 (2015-12-10) -- "Wooden Christmas-Tree"
+Copyright (C) 2015 The R Foundation for Statistical Computing
+Platform: x86_64-redhat-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> ###########################################################
+> # Computation of PLS-PCE Sensitivity Indexes 
+> # for the so-called Ishigami function
+> # via Polynomial Chaos Expansion (PCE) and regression PLS
+> ###########################################################
+> # Load of necessary functions
+> library("plspolychaos")
+> 
+> #############################################
+> # Read data
+> #############################################
+> load(system.file("extdata", "ishigami200.Rda", package="plspolychaos"))
+> print( dim(ishi200))
+[1] 200   4
+> # 200 4
+> X <- ishi200[, -ncol(ishi200)]
+> Y <- ishi200[,  ncol(ishi200)]
+> #############################################
+> degree<-6
+> nc <- 25
+> # nvx <- 3
+> #############################################
+> # Data characteristics
+> #############################################
+> descrdata(X,Y)
+
+Number of rows: 200 
+
+            Mean  Std Dev    Minimum   Maximum
+V1 -5.000004e-12 1.827466  -3.141593  3.141593
+V2 -5.000004e-12 1.827466  -3.141593  3.141593
+V3 -5.000004e-12 1.827466  -3.141593  3.141593
+Y   3.472253e+00 3.461920 -10.284498 13.195264
+
+Correlation
+          V1        V2        V3         Y
+V1 1.0000000 0.7859596 0.7856506 0.4319087
+V2 0.7859596 1.0000000 0.7888397 0.4442267
+V3 0.7856506 0.7888397 1.0000000 0.4688226
+Y  0.4319087 0.4442267 0.4688226 1.0000000
+
+> 
+> #############################################
+> # Build Legendre polynomial
+> #############################################
+> pce <- polyLeg(X, Y, degree)
+> print(pce, all=TRUE)
+Total number of monomials: 83 
+Polynomial expression:
+0 + 3 + 2 + 1 + 3*3 + 2*3 + 2*2 + 1*3 + 1*2 + 1*1 + 3*3*3 + 2*3*3 + 2*2*3 + 2*2*2 + 1*3*3 + 1*2*3 + 1*2*2 + 1*1*3 + 1*1*2 + 1*1*1 + 3*3*3*3 + 2*3*3*3 + 2*2*3*3 + 2*2*2*3 + 2*2*2*2 + 1*3*3*3 + 1*2*3*3 + 1*2*2*3 + 1*2*2*2 + 1*1*3*3 + 1*1*2*3 + 1*1*2*2 + 1*1*1*3 + 1*1*1*2 + 1*1*1*1 + 3*3*3*3*3 + 2*3*3*3*3 + 2*2*3*3*3 + 2*2*2*3*3 + 2*2*2*2*3 + 2*2*2*2*2 + 1*3*3*3*3 + 1*2*3*3*3 + 1*2*2*3*3 + 1*2*2*2*3 + 1*2*2*2*2 + 1*1*3*3*3 + 1*1*2*3*3 + 1*1*2*2*3 + 1*1*2*2*2 + 1*1*1*3*3 + 1*1*1*2*3 + 1*1*1*2*2 + 1*1*1*1*3 + 1*1*1*1*2 + 1*1*1*1*1 + 3*3*3*3*3*3 + 2*3*3*3*3*3 + 2*2*3*3*3*3 + 2*2*2*3*3*3 + 2*2*2*2*3*3 + 2*2*2*2*2*3 + 2*2*2*2*2*2 + 1*3*3*3*3*3 + 1*2*3*3*3*3 + 1*2*2*3*3*3 + 1*2*2*2*3*3 + 1*2*2*2*2*3 + 1*2*2*2*2*2 + 1*1*3*3*3*3 + 1*1*2*3*3*3 + 1*1*2*2*3*3 + 1*1*2*2*2*3 + 1*1*2*2*2*2 + 1*1*1*3*3*3 + 1*1*1*2*3*3 + 1*1*1*2*2*3 + 1*1*1*2*2*2 + 1*1*1*1*3*3 + 1*1*1*1*2*3 + 1*1*1*1*2*2 + 1*1*1*1*1*3 + 1*1*1*1*1*2 + 1*1*1*1*1*1 
+Number of monomials of degree 1: 3
+Number of monomials of degree 2: 6
+Number of monomials of degree 3: 10
+Number of monomials of degree 4: 15
+Number of monomials of degree 5: 21
+Number of monomials of degree 6: 28
+Number of inputs:  3 
+Polynomial degree:  6 
+Number of rows: 200 
+Created by:
+polyLeg(lhs = X, Y = Y, degree = degree)
+> #############################################
+> # Computations
+> #############################################
+> ret <- calcPLSPCE(pce, nc=nc)
+> print(ret, all=TRUE)
+
+Explanation level of the response (R2, percentage and cumulated percentage)
+        R2     %R2 %R2cumulated
+c1  0.3365 33.9632      33.9632
+c2  0.3815 38.5009      72.4641
+c3  0.1203 12.1433      84.6074
+c4  0.0962  9.7092      94.3166
+c5  0.0282  2.8479      97.1645
+c6  0.0101  1.0156      98.1801
+c7  0.0068  0.6862      98.8664
+c8  0.0047  0.4770      99.3433
+c9  0.0011  0.1123      99.4556
+c10 0.0011  0.1071      99.5627
+c11 0.0011  0.1101      99.6728
+c12 0.0008  0.0791      99.7519
+c13 0.0009  0.0911      99.8430
+c14 0.0004  0.0358      99.8788
+c15 0.0002  0.0221      99.9009
+c16 0.0002  0.0187      99.9196
+c17 0.0001  0.0111      99.9307
+c18 0.0001  0.0129      99.9436
+c19 0.0001  0.0127      99.9563
+c20 0.0001  0.0094      99.9657
+c21 0.0001  0.0089      99.9746
+c22 0.0001  0.0069      99.9815
+c23 0.0001  0.0055      99.9870
+c24 0.0000  0.0046      99.9916
+c25 0.0001  0.0084     100.0000
+
+Explanation-prediction level of the response (Q2 and Q2cum)
+        Q2  Q2cum
+c1  0.3021 0.3021
+c2  0.5425 0.6807
+c3  0.4042 0.8098
+c4  0.5702 0.9182
+c5  0.3985 0.9508
+c6  0.2073 0.9610
+c7  0.1797 0.9680
+c8  0.1544 0.9730
+c9  0.0000 0.9730
+c10 0.0000 0.9730
+c11 0.0000 0.9730
+c12 0.0000 0.9730
+c13 0.0000 0.9730
+c14 0.0000 0.9730
+c15 0.0000 0.9730
+c16 0.0000 0.9730
+c17 0.0000 0.9730
+c18 0.0000 0.9730
+c19 0.0000 0.9730
+c20 0.0000 0.9730
+c21 0.0000 0.9730
+c22 0.0000 0.9730
+c23 0.0000 0.9730
+c24 0.0000 0.9730
+c25 0.0000 0.9730
+
+Optimal number of components:  8 
+
+Explanation level of the optimal number of components
+       R2   %R2 %R2cumulated
+c8 0.0047 0.477      99.3433
+
+Explanation-prediction level of the optimal number of components
+       Q2 Q2cum
+c8 0.1544 0.973
+
+Root Mean Square Prediction of the optimal number of components
+    rmsep
+c8 0.1312
+
+PLS-PCE sensivity indexes
+       LE     PE    TPE
+V1 0.0601 0.1311 0.3563
+V2 0.0280 0.4792 0.6743
+V3 0.0504 0.0830 0.3440
+
+%PLS-PCE sensivity indexes
+        LE      PE     TPE
+V1 43.3845 18.9070 25.9225
+V2 20.2389 69.1204 49.0553
+V3 36.3766 11.9727 25.0222
+
+Total number of monomials: 83 
+Number of inputs:  3 
+Polynomial degree:  6 
+Number of rows: 200 
+
+Also included:
+ * slot 'COEF' (PLS-regression coefficients). Dimension: 84 25
+ * slot 'betaCR' (centered-reducted PLS-regression coefficients). Dimension: 83 25
+ * slot 'y.hat' (metamodel outputs). Length: 200
+ * slot 'rmsep' (Root Mean Square Predictions). Length: 25
+ * slot 'STRUC' (matrix coding the polynomial expression). Dimension: 84 3 
+> #Indices
+> ##       Input         LE         PE       TPE
+> ##  [1,]     1 0.06006404 0.13108721 0.3563431
+> ##  [2,]     2 0.02801984 0.47923079 0.6743385
+> ##  [3,]     3 0.05036192 0.08300983 0.3439676
+> #############################################
+> # For the plots
+> pdf("ishigami200.pdf")
+> plot(ret, pce)
+> 
+> graphics.off()
+> 
+> 
+> proc.time()
+   user  system elapsed 
+  0.815   0.022   0.846 
