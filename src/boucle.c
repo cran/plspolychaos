@@ -208,40 +208,6 @@ res:  ncol1 X 1
   } /* fin j */
 
 } /* fin multppsc */
-/* --------------------------------------------------- */
-/* calcHii
-FUNCTION
-calculate: B= t(T[1:hcur, , drop = FALSE]) %*% A
-           Hii[i] = sum(B[i, ] * T[1:hcur, i]), i=1,n
-INPUT
-nc: nombre de lignes de T
-hcur:  nombre de lignes a considerer dans T et
-nombre de lignes et de colonnes de A
-n: nombre de colonnes de T 
-T: matrix nc X n
-A: mtrix hcur X hcur
-OUTPUT
-Hii: vector n
-*/
-void calcHii(int *nc, int *hcur, int *n,
-	     double *T, double *A, 
-	     double *Hii) {
-  int i,j,k;
-  double B;
-
-  for (i=0; i< *n; i++) {
-    Hii[i] =0;
-    for (j=0; j< *hcur; j++) {
-      B = 0.0;
-      for (k=0; k< *hcur; k++) {
-	B += (T[i*(*nc)+k] * A[j* (*hcur)+k]);
-      } /* fin k */
-      Hii[i] += (T[i*(*nc)+j] * B);
-    } /* fin j */
-  } /* fin i */
-
-
-} /* fin calcHii */
 
 /* --------------------------------------------------- */
 /*
@@ -310,54 +276,4 @@ double bouclewhile(int nlig, int ncolX,
   return(somtnew2);
 		  
 } /* fin bouclewhile */
-
-/* --------------------------------------------------- */
-/*
-boucleregpls
-INPUT
-Xold: matrix nlig X ncolX
-YYold: matrix nlig X 1
-INPUT/OUTPUT
-somunew
-WORKING
-wold, wdif: matrix  ncolX (i.e=nbre de monomes) X 1
-OUTPUT
-wnew: matrix  ncolX (i.e=nbre de monomes) X 1
-cnew:  matrix 1 X 1 (dim=1 car une seule reponse)
-unew, tnew: matrix nlig X 1
-pnew:   matrix ncolX X 1
- leRSS: scalar (colSums((YY.old - t.new %*% t(c.new))^2))
-*/
-
-void boucleregpls(int *nlig, int *ncolX, 
-		  double *Xold, double * YYold, 
-		  double *wnew, double *wold,
-		  double *cnew, double *unew, double *tnew,
-		  double *pnew,
-		  double *wdif,
-		  double *somunew,
-		  double *leRSS) {
-  /*  The allocations are done before the call */
-  double somtnew2;
-  int ncolYY=1; /* une seule reponse */
-
-
-  somtnew2 = bouclewhile(*nlig, *ncolX,
-		  Xold,  YYold, 
-		  wnew, wold,
-		  cnew, unew, tnew,
-		  wdif,	 somunew);
-  /* p.new <- t(X.old) %*% t.new/sum(t.new^2); P[hcur, ] <- p.new */
-  multppsc(Xold, tnew, somtnew2, *nlig, *ncolX, pnew);
-  /* c.new <- t(YY.old) %*% t.new/sum(t.new^2) */
-  multppsc(YYold, tnew, somtnew2, *nlig, ncolYY,  cnew);
-  /*  RSS[hcur + 1, ] <- colSums((YY.old - t.new %*% t(c.new))^2) */
-  *leRSS = multsom( YYold, tnew, *cnew, *nlig);
-  /* X.old <- X.old - t.new %*% t(p.new) */
-  multXmoins(*nlig, *ncolX, Xold, tnew, pnew);
-  /* YY.old <- YY.old - t.new %*% t(c.new) */
-  multXmoins(*nlig, ncolYY, YYold, tnew, cnew);
-
-
-} /* fin boucleregpls */
 

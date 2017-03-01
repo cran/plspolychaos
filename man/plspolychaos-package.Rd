@@ -25,12 +25,11 @@ Maintainer: \packageMaintainer{plspolychaos}
 }
 \references{
   \itemize{ 
-    \item Metamodeling and global sensitivity analysis for computer models with
-correlated inputs: a practical approach tested with a 3D light interception
-computer model.
-J.-P. Gauchi et al.
-In \emph{Environmental Modelling & Software},
-2016, submitted.
+    \item  Metamodeling and global sensitivity analysis for computer models with correlated inputs: A practical approach tested with 3D light interception computer model.
+J.-P. Gauchi, A. Bensadoun, F. Colas, N. Colbach.
+In \emph{Environmental Modelling \& Software},
+Volume 92, June 2017. p. 40-56.
+http://dx.doi.org/10.1016/j.envsoft.2016.12.005
   }
   }
 \seealso{
